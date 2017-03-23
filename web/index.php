@@ -9,11 +9,21 @@ use Symfony\Component\HttpFoundation\Request;
 $app            = new Application();
 
 $app->get('/', function(Request $request) use ($app){
-  return new JsonResponse("ok", 200);
+  
+  $q = $request->query->get("q");
+
+  return new JsonResponse(["ok" => $q], 200);
 });
 
 $app->get('/user/{userid}', function(Request $request, $userid) use ($app){
-  return new JsonResponse($userid, 200);
+  
+  $user = [
+    "id" => $userid,
+    "pseudo" => "smwhr"
+  ];
+
+  return new JsonResponse($user, 200);
+
 });
 
 $app->run();
