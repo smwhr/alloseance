@@ -4,6 +4,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+use Doctrine\DBAL\Query\QueryBuilder;
+
 
 $app->get('/', function(Request $request) use ($app){
   
@@ -14,13 +16,15 @@ $app->get('/', function(Request $request) use ($app){
 
 $app->get('/film/{filmid}', function(Request $request, $filmid) use ($app){
   
-  $sql = "SELECT * FROM films WHERE id_film = ?";
-  $stmt = $app['db']->prepare($sql);
-  $stmt->bindValue(1, $filmid);
-  $stmt->execute();
 
-  $user = $stmt->fetch();
+  $qb = new QueryBuilder($app['db']);
+  $qb->select("*")
+          ->from("films")
+          ->andWhere("id_film = :id_film")
+          ->setParameter("id_film", $filmid);
+  $res = $qb->execute();
+  $film = $res->fetch();
 
-  return new JsonResponse($user, 200);
+  return new JsonResponse($film, 200);
 
 });
