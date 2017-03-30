@@ -61,3 +61,25 @@ $app->get('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
   return new JsonResponse($film, 200);
 
 });
+
+
+
+// UPDATE
+$app->put('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
+  $app['db']->update("films",
+      [
+       "id_genre" => $request->request->get('id_genre'),
+       "titre" => $request->request->get('titre', 'No title'),
+       "duree_minutes" => $request->request->get('duree_minutes', 120),
+      ],
+      ['id_film' => $filmid]
+   );
+  return new JsonResponse($filmid, 200);
+});
+
+
+// DELETE
+$app->delete('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
+  $app['db']->delete("films",['id_film' => $filmid]);
+  return new JsonResponse(["delete"=>"ok"], 200);
+});
