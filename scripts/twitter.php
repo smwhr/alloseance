@@ -7,12 +7,8 @@ use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
 $stack = HandlerStack::create();
 
-$oauth = new Oauth1([
-    'consumer_key'    => '',
-    'consumer_secret' => '',
-    'token'           => '',
-    'token_secret'    => ''
-]);
+include(__DIR__."/config.php");
+$oauth = new Oauth1($oauth_config);
 $stack->push($oauth);
 
 $client = new Client(['base_uri' => 'https://api.twitter.com/1.1/', 
