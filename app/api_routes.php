@@ -58,6 +58,10 @@ $app->get('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
   $res = $qb->execute();
   $film = $res->fetch();
 
+  if($film === false){
+    return new JsonResponse(["notfound" => $filmid],404);    
+  }
+
   return new JsonResponse($film, 200);
 
 });
@@ -80,6 +84,6 @@ $app->put('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
 
 // DELETE
 $app->delete('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
-  $app['db']->delete("films",['id_film' => $filmid]);
-  return new JsonResponse(["delete"=>"ok"], 200);
+  $deleted = $app['db']->delete("films",['id_film' => $filmid]);
+  return new JsonResponse(["delete" => $deleted], $deleted ? 200 : 404);
 });
