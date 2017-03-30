@@ -6,19 +6,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 
+$qb = new QueryBuilder($app['db']);
 
-$app->get('/', function(Request $request) use ($app){
+$app->get('/', function(Request $request) use ($app, $qb){
   $q = $request->query->get("q");
   return new JsonResponse(["ok" => $q], 200);
 });
 
-$app->get('/films', function(Request $request) use ($app){
+$app->get('/films', function(Request $request) use ($app, $qb){
   
   $limit = $request->query->get("limit", 10);
   $page = $request->query->get("page", 1);
   $offset = ($page - 1) * $limit;
 
-  $qb = new QueryBuilder($app['db']);
+  
   $qb->select("*")
           ->from("film")
           ->setMaxResults($limit)
@@ -32,9 +33,24 @@ $app->get('/films', function(Request $request) use ($app){
 
 });
 
-$app->get('/film/{filmid}', function(Request $request, $filmid) use ($app){
+//CREATE
+$app->post('/film', function(Request $request) use ($app, $qb){
+
+  $app['db']->insert("films",
+      [
+       "id_genre" => $request->request->get('id_genre'),
+       "titre" => $request->request->get('titre', 'No title'),
+       "duree_minutes" => $request->request->get('duree_minutes', 120),
+      ]
+   );
+  $film_id = $app['db']->lastInsertId();
+
+  return new JsonResponse($film_id, 201);
+});
+
+// READ
+$app->get('/film/{filmid}', function(Request $request, $filmid) use ($app, $qb){
   
-  $qb = new QueryBuilder($app['db']);
   $qb->select("*")
           ->from("films")
           ->andWhere("id_film = :id_film")
