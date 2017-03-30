@@ -20,4 +20,6 @@ $client = new Client(['base_uri' => 'https://api.twitter.com/1.1/',
 $res = $client->get('statuses/home_timeline.json', ['auth' => 'oauth']);
 $flux = json_decode($res->getBody()->__toString());
 
-var_dump($flux);
+foreach ($flux as $twit) {
+  echo $twit->text."\n"  ;
+}
